@@ -1,0 +1,38 @@
+name: "diffgate review"
+description: "Self-hosted AI code review. Runs in your CI against your own model (Ollama or your gateway) — your code never leaves your network."
+author: "diffgate"
+branding:
+  icon: "eye"
+  color: "blue"
+
+inputs:
+  language:
+    description: "Optional primary language hint (e.g. python, typescript)."
+    required: false
+    default: ""
+  model:
+    description: "Override the inference model (default: qwen2.5:3b)."
+    required: false
+    default: ""
+  ollama-base-url:
+    description: "Your Ollama server URL, reachable from the runner (self-hosted runner or a reachable host)."
+    required: false
+    default: "http://localhost:11434"
+  github-token:
+    description: "Token used to read the PR diff and post the comment."
+    required: false
+    default: ${{ github.token }}
+  gateway-url:
+    description: "Optional: point at a diffgate/FastAPI /v1/generate gateway instead of Ollama direct."
+    required: false
+    default: ""
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  env:
+    OLLAMA_BASE_URL: ${{ inputs.ollama-base-url }}
+    DIFFGATE_GATEWAY_URL: ${{ inputs.gateway-url }}
+    DIFFGATE_MODEL: ${{ inputs.model }}
+    DIFFGATE_LANGUAGE: ${{ inputs.language }}
+    GITHUB_TOKEN: ${{ inputs.github-token }}
